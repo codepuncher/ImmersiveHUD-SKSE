@@ -118,7 +118,7 @@ else ()
 	)
 endif()
 
-find_path(CLIB_UTIL_INCLUDE_DIRS "ClibUtil/detail/SimpleIni.h")
+find_path(CLIB_UTIL_INCLUDE_DIRS "CLIBUtil/detail/SimpleIni.h")
 
 # ---- Add source files ----
 
@@ -180,6 +180,16 @@ target_link_libraries(
 		${CommonLibName}::${CommonLibName}
 )
 
+# cmake_llvm_rc preprocesses with INCLUDE_DIRECTORIES only, so it never sees the xwin /imsvc flags.
+if (DEFINED XWIN_DIR)
+	target_include_directories(
+		${PROJECT_NAME}
+		SYSTEM PRIVATE
+			"$<$<COMPILE_LANGUAGE:RC>:${XWIN_DIR}/sdk/include/um>"
+			"$<$<COMPILE_LANGUAGE:RC>:${XWIN_DIR}/sdk/include/shared>"
+	)
+endif ()
+
 target_precompile_headers(
 	${PROJECT_NAME}
 	PRIVATE
@@ -210,3 +220,24 @@ if (MSVC)
 			"$<$<CONFIG:RELEASE>:/INCREMENTAL:NO;/OPT:REF;/OPT:ICF;/DEBUG:FULL>"
 	)
 endif ()
+
+if (DEFINED ENV{SKYRIM_MODS_FOLDER} AND IS_DIRECTORY "$ENV{SKYRIM_MODS_FOLDER}")
+	set(_default_deploy "$ENV{SKYRIM_MODS_FOLDER}/${PROJECT_NAME}")
+elseif (DEFINED ENV{SKYRIM_FOLDER} AND IS_DIRECTORY "$ENV{SKYRIM_FOLDER}/Data")
+	set(_default_deploy "$ENV{SKYRIM_FOLDER}/Data")
+else ()
+	set(_default_deploy "${CMAKE_BINARY_DIR}/deploy/${PROJECT_NAME}")
+endif ()
+
+set(DEPLOY_DIR "${_default_deploy}" CACHE PATH "Deploy destination (set SKYRIM_MODS_FOLDER or SKYRIM_FOLDER in .env)")
+
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "${DEPLOY_DIR}/SKSE/Plugins" COMPONENT Deploy)
+install(FILES "$<TARGET_PDB_FILE:${PROJECT_NAME}>" DESTINATION "${DEPLOY_DIR}/SKSE/Plugins" COMPONENT Deploy OPTIONAL)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/" DESTINATION "${DEPLOY_DIR}" COMPONENT Deploy)
+
+add_custom_target(
+	deploy
+	COMMAND "${CMAKE_COMMAND}" --install "${CMAKE_BINARY_DIR}" --component Deploy
+	DEPENDS ${PROJECT_NAME}
+	COMMENT "Deploying to ${DEPLOY_DIR}"
+)

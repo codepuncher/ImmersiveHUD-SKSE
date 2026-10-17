@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 6,
   "cmakeMinimumRequired": {
     "major": 3,
     "minor": 21,
@@ -65,6 +65,40 @@
       }
     },
     {
+      "name": "ninja",
+      "hidden": true,
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_MAKE_PROGRAM": "ninja"
+      }
+    },
+    {
+      "name": "clang-cl-linux",
+      "hidden": true,
+      "cacheVariables": {
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets",
+        "VCPKG_TARGET_TRIPLET": "x64-llvm-mingw-static",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchains/clang-cl-cross.cmake",
+        "VCPKG_APPLOCAL_DEPS": "OFF",
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL"
+      }
+    },
+    {
+      "name": "release-linux",
+      "displayName": "Release (Linux, clang-cl + xwin)",
+      "description": "Cross-compile for Skyrim AE from Linux using clang-cl, lld-link and xwin headers",
+      "inherits": [
+        "vcpkg",
+        "ninja",
+        "clang-cl-linux"
+      ],
+      "binaryDir": "${sourceDir}/build/release-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_SKYRIMAE": true
+      }
+    },
+    {
       "name": "vs2022-windows-vcpkg-se",
       "inherits": [
         "cmake-dev",
@@ -95,6 +129,34 @@
       "name": "vs2022-windows-vcpkg-se",
       "configurePreset": "vs2022-windows-vcpkg-se",
       "configuration": "Release"
+    },
+    {
+      "name": "release-linux",
+      "configurePreset": "release-linux"
+    },
+    {
+      "name": "deploy",
+      "displayName": "Deploy to mod manager",
+      "configurePreset": "release-linux",
+      "targets": [
+        "deploy"
+      ]
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "deploy",
+      "displayName": "Build & Deploy to mod manager",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "release-linux"
+        },
+        {
+          "type": "build",
+          "name": "deploy"
+        }
+      ]
     }
   ]
 }

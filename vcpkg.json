@@ -11,5 +11,15 @@
     "spdlog",
     "nlohmann-json"
   ],
-  "builtin-baseline": "f4ea42fa5c2b993cf2b75725331616999e2e34d1"
+  "builtin-baseline": "f4ea42fa5c2b993cf2b75725331616999e2e34d1",
+  "overrides": [
+    {
+      "name": "fmt",
+      "version": "12.1.0"
+    },
+    {
+      "name": "spdlog",
+      "version": "1.17.0"
+    }
+  ]
 }

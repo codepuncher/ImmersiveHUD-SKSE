@@ -32,7 +32,7 @@ private:
 
     // -- interface requests
 private:
-    static [[nodiscard]] inline void* RequestPluginAPI(const Version apiVersion = Version::V0)
+    [[nodiscard]] static inline void* RequestPluginAPI(const Version apiVersion = Version::V0)
     {
         HMODULE pluginHandle = GetModuleHandleA(pluginName);
         if (!pluginHandle)
@@ -47,7 +47,7 @@ private:
 
 public:
 	// call this in kPostLoad or similar to get access to the BTPS API
-    static [[nodiscard]] inline API_V0* RequestPluginAPI_V0()
+    [[nodiscard]] static inline API_V0* RequestPluginAPI_V0()
     {
         return reinterpret_cast<API_V0*>(RequestPluginAPI(Version::V0));
     }

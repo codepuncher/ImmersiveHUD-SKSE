@@ -2,3 +2,4 @@ build*/
 /.vs
 
 extern/CommonLibSSE/
+.env

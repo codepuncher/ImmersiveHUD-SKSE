@@ -7,10 +7,10 @@
 #include "SKSE/API.h"
 #include "SKSE/SKSE.h"
 
-#include <ClibUtil/simpleIni.hpp>
-#include <ClibUtil/distribution.hpp>
-#include <ClibUtil/singleton.hpp>
-#include <ClibUtil/string.hpp>
+#include <CLIBUtil/simpleINI.hpp>
+#include <CLIBUtil/distribution.hpp>
+#include <CLIBUtil/singleton.hpp>
+#include <CLIBUtil/string.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include <numbers>
